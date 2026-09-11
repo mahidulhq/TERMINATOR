@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/screenshots/img.jpg" alt="Project logo" width="160" />
+</p>
+
 # TERMINATOR
 
 TERMINATOR is a command-line threat intelligence tool designed to analyze URLs for potential phishing indicators, domain typosquatting, and suspicious hosting patterns. It performs multi-layered heuristic analysis and optionally queries the VirusTotal API v3 for threat data.
