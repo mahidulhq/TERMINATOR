@@ -2,6 +2,9 @@
 title TERMINATOR - Phishing Threat Intelligence
 cls
 
+:: Change working directory to the parent directory (project root)
+cd /d "%~dp0.."
+
 :: Check if Python is installed
 python --version >nul 2>&1
 if %errorlevel% neq 0 (
@@ -11,7 +14,7 @@ if %errorlevel% neq 0 (
     exit /b
 )
 
-:: Install required dependencies automatically if missing
+:: Automatically install required packages if missing
 python -c "import colorama, requests, tldextract, dotenv" >nul 2>&1
 if %errorlevel% neq 0 (
     echo [*] Installing required dependencies...
@@ -19,6 +22,7 @@ if %errorlevel% neq 0 (
     cls
 )
 
-:: Run TERMINATOR
+:: Run TERMINATOR from the root directory
 python terminator.py
+
 pause

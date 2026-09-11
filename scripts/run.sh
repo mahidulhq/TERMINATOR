@@ -3,7 +3,10 @@
 # Ensure script halts on fatal error
 set -e
 
-# Make sure python3 is available
+# Change working directory to the parent directory (project root)
+cd "$(dirname "$0")/.."
+
+# Check if Python 3 is installed
 if ! command -v python3 &> /dev/null; then
     echo "[!] Python3 is not installed. Please install python3 to continue."
     exit 1
@@ -16,5 +19,5 @@ python3 -c "import colorama, requests, tldextract, dotenv" &> /dev/null || {
     clear
 }
 
-# Run TERMINATOR
+# Run TERMINATOR from the root directory
 python3 terminator.py
