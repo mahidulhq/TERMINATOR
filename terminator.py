@@ -180,7 +180,7 @@ class TerminatorAnalyzer:
 def manage_api_key():
     """Interactive VirusTotal API Key setup menu."""
     current_key = os.getenv("VT_API_KEY")
-    print(f"\n{Fore.CYAN}[⚙️  CONFIG] VirusTotal API Key Management{Style.RESET_ALL}")
+    print(f"\n{Fore.CYAN}[CONFIG] VirusTotal API Key Management{Style.RESET_ALL}")
     
     if current_key:
         print(f"[+] Current API Key: {current_key[:4]}...' (Configured)")
