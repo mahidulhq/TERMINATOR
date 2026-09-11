@@ -2,7 +2,7 @@
 """
 TERMINATOR - Advanced Phishing Threat Intelligence CLI
 Author: mahidulhq
-Version: 1.0.0 
+Version: 1.0.0
 """
 
 import os
@@ -180,7 +180,7 @@ class TerminatorAnalyzer:
 def manage_api_key():
     """Interactive VirusTotal API Key setup menu."""
     current_key = os.getenv("VT_API_KEY")
-    print(f"\n{Fore.CYAN}[CONFIG] VirusTotal API Key Management{Style.RESET_ALL}")
+    print(f"\n{Fore.CYAN}[⚙️  CONFIG] VirusTotal API Key Management{Style.RESET_ALL}")
     
     if current_key:
         print(f"[+] Current API Key: {current_key[:4]}...' (Configured)")
@@ -210,55 +210,89 @@ def main():
     print(BANNER)
     print("=================================================================")
     print("                    ADVANCED PHISHING ANALYZER                   ")
+    print("                           by mahidulhq                          ")
     print("=================================================================\n")
 
-    # Check for API Key configuration status
+    # Initial check for API Key configuration status
     if not os.getenv("VT_API_KEY"):
         manage_api_key()
 
+    # Handle direct URL pass via command-line execution (e.g., python terminator.py google.com)
     if len(sys.argv) > 1:
         target_url = sys.argv[1]
-    else:
-        print("Enter 'K' to configure API Key, or enter target URL to analyze.")
-        user_input = input("Target URL / Option: ").strip()
+        print(f"\n[*] Initiating Threat Analysis on: {target_url}")
+        print("-" * 65)
+
+        analyzer = TerminatorAnalyzer(target_url)
+        score, findings = analyzer.run()
+
+        for finding in findings:
+            if "[CRITICAL]" in finding or "[ERROR]" in finding:
+                print(f"{Fore.RED}{finding}{Style.RESET_ALL}")
+            elif "[WARNING]" in finding:
+                print(f"{Fore.YELLOW}{finding}{Style.RESET_ALL}")
+            else:
+                print(f"{Fore.CYAN}{finding}{Style.RESET_ALL}")
+
+        print("-" * 65)
+        if score >= 7:
+            verdict_str = f"{Fore.RED}HIGH RISK / MALICIOUS{Style.RESET_ALL}"
+        elif score >= 4:
+            verdict_str = f"{Fore.YELLOW}SUSPICIOUS{Style.RESET_ALL}"
+        else:
+            verdict_str = f"{Fore.GREEN}LOW RISK / CLEAN{Style.RESET_ALL}"
+
+        print(f"[*] TOTAL RISK SCORE: {score}/10")
+        print(f"[*] FINAL VERDICT   : {verdict_str}")
+        print("=================================================================\n")
+        return
+
+    # Continuous interactive execution loop
+    while True:
+        print("\nOptions:")
+        print("  - Enter target URL to analyze")
+        print("  - Enter 'K' to configure/update VirusTotal API Key")
+        print("  - Enter 'Q' to quit TERMINATOR")
         
+        user_input = input("\nTERMINATOR > ").strip()
+
+        if not user_input:
+            continue
+
+        if user_input.upper() in ['Q', 'QUIT', 'EXIT']:
+            print(f"\n{Fore.YELLOW}[*] Exiting TERMINATOR. Goodbye!{Style.RESET_ALL}")
+            sys.exit(0)
+
         if user_input.upper() == 'K':
             manage_api_key()
-            target_url = input("Enter target URL to analyze: ").strip()
+            continue
+
+        target_url = user_input
+        print(f"\n[*] Initiating Threat Analysis on: {target_url}")
+        print("-" * 65)
+
+        analyzer = TerminatorAnalyzer(target_url)
+        score, findings = analyzer.run()
+
+        for finding in findings:
+            if "[CRITICAL]" in finding or "[ERROR]" in finding:
+                print(f"{Fore.RED}{finding}{Style.RESET_ALL}")
+            elif "[WARNING]" in finding:
+                print(f"{Fore.YELLOW}{finding}{Style.RESET_ALL}")
+            else:
+                print(f"{Fore.CYAN}{finding}{Style.RESET_ALL}")
+
+        print("-" * 65)
+        if score >= 7:
+            verdict_str = f"{Fore.RED}HIGH RISK / MALICIOUS{Style.RESET_ALL}"
+        elif score >= 4:
+            verdict_str = f"{Fore.YELLOW}SUSPICIOUS{Style.RESET_ALL}"
         else:
-            target_url = user_input
+            verdict_str = f"{Fore.GREEN}LOW RISK / CLEAN{Style.RESET_ALL}"
 
-    if not target_url:
-        print(f"{Fore.RED}[-] Error: No URL provided. Exiting.{Style.RESET_ALL}")
-        sys.exit(1)
-
-    print(f"\n[*] Initiating Threat Analysis on: {target_url}")
-    print("-" * 65)
-
-    analyzer = TerminatorAnalyzer(target_url)
-    score, findings = analyzer.run()
-
-    for finding in findings:
-        if "[CRITICAL]" in finding or "[ERROR]" in finding:
-            print(f"{Fore.RED}{finding}{Style.RESET_ALL}")
-        elif "[WARNING]" in finding:
-            print(f"{Fore.YELLOW}{finding}{Style.RESET_ALL}")
-        else:
-            print(f"{Fore.CYAN}{finding}{Style.RESET_ALL}")
-
-    print("-" * 65)
-    
-    # Verdict output
-    if score >= 7:
-        verdict_str = f"{Fore.RED}HIGH RISK / MALICIOUS{Style.RESET_ALL}"
-    elif score >= 4:
-        verdict_str = f"{Fore.YELLOW}SUSPICIOUS{Style.RESET_ALL}"
-    else:
-        verdict_str = f"{Fore.GREEN}LOW RISK / CLEAN{Style.RESET_ALL}"
-
-    print(f"[*] TOTAL RISK SCORE: {score}/10")
-    print(f"[*] FINAL VERDICT   : {verdict_str}")
-    print("=================================================================\n")
+        print(f"[*] TOTAL RISK SCORE: {score}/10")
+        print(f"[*] FINAL VERDICT   : {verdict_str}")
+        print("=================================================================")
 
 
 if __name__ == "__main__":
